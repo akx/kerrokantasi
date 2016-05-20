@@ -6,7 +6,7 @@ from django.utils.timezone import now
 
 from democracy.enums import InitialSectionType
 from democracy.models import (
-    Hearing, HearingComment, Label, Section, SectionComment, SectionImage, SectionType
+    Hearing, Label, Section, SectionComment, SectionImage, SectionType
 )
 from democracy.models.utils import copy_hearing
 from democracy.tests.utils import (
@@ -26,7 +26,6 @@ def create_hearings(n):
     SectionImage.objects.all().delete()
     SectionComment.objects.all().delete()
     Section.objects.all().delete()
-    HearingComment.objects.all().delete()
     Hearing.objects.all().delete()
     hearings = []
 
@@ -334,7 +333,6 @@ def test_hearing_copy(default_hearing, random_label):
     assert random_label in new_hearing.labels.all()
 
     # there should be no comments for the new hearing
-    assert new_hearing.comments.count() == 0
     assert new_hearing.n_comments == 0
 
     # closure info section should not have been copied

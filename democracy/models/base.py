@@ -124,10 +124,6 @@ class Commentable(models.Model):
 
     def recache_n_comments(self):
         new_n_comments = self.comments.count()
-        # if commentable has sections, include them in the total comment count
-        if hasattr(self, 'sections'):
-            if self.sections.all():
-                new_n_comments += self.sections.all().aggregate(Sum('n_comments'))['n_comments__sum']
         if new_n_comments != self.n_comments:
             self.n_comments = new_n_comments
             self.save(update_fields=("n_comments",))

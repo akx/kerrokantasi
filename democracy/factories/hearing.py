@@ -8,7 +8,7 @@ from django.utils.timezone import now
 
 from democracy.enums import Commenting
 from democracy.factories.comment import BaseCommentFactory
-from democracy.models import Hearing, HearingComment, Label, Section, SectionComment, SectionType
+from democracy.models import Hearing, Label, Section, SectionComment, SectionType
 
 LOG = logging.getLogger(__name__)
 
@@ -19,12 +19,6 @@ class LabelFactory(factory.django.DjangoModelFactory):
         model = Label
 
     label = factory.Faker("sentence")
-
-
-class HearingCommentFactory(BaseCommentFactory):
-
-    class Meta:
-        model = HearingComment
 
 
 class SectionCommentFactory(BaseCommentFactory):
@@ -57,10 +51,6 @@ class HearingFactory(factory.django.DjangoModelFactory):
         for x in range(random.randint(1, 5)):
             section = SectionFactory(hearing=obj)
             LOG.info("Hearing %s: Created section %s", obj, section)
-
-        for x in range(random.randint(1, 5)):
-            comment = HearingCommentFactory(hearing=obj)
-            LOG.info("Hearing %s: Created comment %s", obj, comment)
 
         obj.recache_n_comments()
 

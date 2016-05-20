@@ -3,6 +3,7 @@ from urllib.parse import urljoin
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
+from django.db.models import Sum
 from django.utils import timezone
 from django.utils.html import format_html
 from django.utils.timezone import now
@@ -96,14 +97,11 @@ class Hearing(Commentable, StringIdBaseModel):
 
         super().save(*args, **kwargs)
 
-
-@revisions.register
-@recache_on_save
-class HearingComment(BaseComment):
-    parent_field = "hearing"
-    parent_model = Hearing
-    hearing = models.ForeignKey(Hearing, related_name="comments")
-
-    class Meta:
-        verbose_name = _('hearing comment')
-        verbose_name_plural = _('hearing comments')
+    def recache_n_comments(self):
+        new_n_comments = 0
+        if hasattr(self, 'sections'):
+            if self.sections.all():
+                new_n_comments += self.sections.all().aggregate(Sum('n_comments'))['n_comments__sum']
+        if new_n_comments != self.n_comments:
+            self.n_comments = new_n_comments
+            self.save(update_fields=("n_comments",))

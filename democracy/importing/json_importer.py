@@ -181,7 +181,7 @@ def import_hearing(hearing_datum, force=False, patch=False):
         abstract=(hearing_datum.pop("lead") or ""),
         content=(hearing_datum.pop("body") or ""),
     )
-    import_comments(hearing, hearing_datum.pop("comments", ()), patch)
+
     import_sections(hearing, hearing_datum, force, patch)
 
     # Compact section ordering...
@@ -189,8 +189,11 @@ def import_hearing(hearing_datum, force=False, patch=False):
         section.ordering = index
         section.save(update_fields=("ordering",))
 
+    first_section = hearing.sections.order_by("ordering").first()
     # Import hearing images as section images for the first section:
-    import_images(hearing.sections.order_by("ordering").first(), hearing_datum, patch)
+    import_images(first_section, hearing_datum, patch)
+    # Import hearing comments as section comments for the first section:
+    import_comments(first_section, hearing_datum.pop("comments", ()), patch)
 
     if hearing_datum.keys():  # pragma: no cover
         log.warn("These keys were not handled while importing %s: %s", hearing, hearing_datum.keys())
