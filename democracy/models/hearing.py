@@ -97,15 +97,6 @@ class Hearing(Commentable, StringIdBaseModel):
         super().save(*args, **kwargs)
 
 
-class HearingImage(BaseImage):
-    parent_field = "hearing"
-    hearing = models.ForeignKey(Hearing, related_name="images")
-
-    class Meta:
-        verbose_name = _('hearing image')
-        verbose_name_plural = _('hearing images')
-
-
 @revisions.register
 @recache_on_save
 class HearingComment(BaseComment):
